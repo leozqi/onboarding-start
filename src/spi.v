@@ -62,12 +62,11 @@ always @(posedge clk) begin
         reg_en_pwm <= {data_in[7:0], reg_en_pwm[7:0]};
       end else if (data_in[14:8] == 8'd4) begin // pwm_duty_cycle
         reg_pwm_duty <= data_in[7:0];
-      end else begin
-        // Ignore invalid addresses
-        reg_en_out <= reg_en_out;
-        reg_en_pwm <= reg_en_pwm;
-        reg_pwm_duty <= reg_pwm_duty;
       end
+    end else if (state >= 'd0 && state <= 'd16 && !sample_ncs[1] && sample_ncs[0]) begin
+      // nCS goes high when it's not supposed to, invalid transaction
+      state <= 0;
+      data_in <= 0;
     end
   end
 end
