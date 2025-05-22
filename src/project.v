@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2025 Leo Qi
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_uwasic_onboarding_leozqi (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -15,13 +15,40 @@ module tt_um_example (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
+e  // Add this inside the module block
+  assign uio_oe = 8'hFF; // Set all IOs to output
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+  // Create wires to refer to the values of the registers
+  wire [7:0] en_reg_out_7_0;
+  wire [7:0] en_reg_out_15_8;
+  wire [7:0] en_reg_pwm_7_0;
+  wire [7:0] en_reg_pwm_15_8;
+  wire [7:0] pwm_duty_cycle;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+  spi spi_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .ncs(ui_in[2]), // Chip Select (active low)
+    .sclk(ui_in[0]), // controller clock: 100Khz
+    .copi(ui_in[1])  // controller-out peripheral-in input
+    .en_out_7_0(reg_en_out[7:0]),
+    .en_out_15_8(reg_en_out[15:8]),
+    .en_pwm_7_0(reg_en_pwm[7:0]),
+    .en_pwm_15_8(reg_en_pwm[15:8]),
+    .pwm_duty_cycle(reg_pwm_duty)
+  );
 
+  // Instantiate the PWM module
+  pwm_peripheral pwm_peripheral_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .en_reg_out_7_0(en_reg_out_7_0),
+    .en_reg_out_15_8(en_reg_out_15_8),
+    .en_reg_pwm_7_0(en_reg_pwm_7_0),
+    .en_reg_pwm_15_8(en_reg_pwm_15_8),
+    .pwm_duty_cycle(pwm_duty_cycle),
+    .out({uio_out, uo_out})
+  );
+  // Add uio_in and ui_in[7:3] to the list of unused signals:
+  wire _unused = &{ena, ui_in[7:3], uio_in, 1'b0};
 endmodule
