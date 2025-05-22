@@ -43,17 +43,18 @@ always @(posedge clk) begin
     sample_copi <= {sample_copi[0], copi};
     sample_ncs <= {sample_ncs[0], ncs};
 
-    if (state == 0 && !sample_ncs[1] && sample_ncs[0]) begin
+    if (state == 0 && sample_ncs[1] && !sample_ncs[0]) begin
       // nCS goes low, all we need is to wait for the first clock edge
       state <= 'd1;
       data_in <= 0;
       reg_en_out <= reg_en_out;
       reg_en_pwm <= reg_en_pwm;
       reg_pwm_duty <= reg_pwm_duty;
-    end else if (state >= 'd1 && state <= 'd16 && sample_sclk[2] && !sample_sclk[1]) begin
+    end else if (state >= 'd1 && state <= 'd16 && !sample_sclk[2] && sample_sclk[1]) begin
       state <= state + 1;
       data_in <= {data_in[14:0], sample_copi[1]};
     end else if (state == 'd17) begin
+      state <= 0;
       if (data_in[14:8] == 8'd0) begin // en_reg_out_7_0
         reg_en_out <= {reg_en_out[15:8], data_in[7:0]};
         reg_en_pwm <= reg_en_pwm;
