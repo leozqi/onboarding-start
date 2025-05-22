@@ -31,11 +31,9 @@ module tt_um_uwasic_onboarding_leozqi (
     .ncs(ui_in[2]), // Chip Select (active low)
     .sclk(ui_in[0]), // controller clock: 100Khz
     .copi(ui_in[1]),  // controller-out peripheral-in input
-    .en_out_7_0(reg_en_out[7:0]),
-    .en_out_15_8(reg_en_out[15:8]),
-    .en_pwm_7_0(reg_en_pwm[7:0]),
-    .en_pwm_15_8(reg_en_pwm[15:8]),
-    .pwm_duty_cycle(reg_pwm_duty)
+    .reg_en_out({en_reg_out_15_8, en_reg_out_7_0}),
+    .reg_en_pwm({en_reg_pwm_15_8, en_reg_pwm_7_0}),
+    .reg_pwm_duty(pwm_duty_cycle)
   );
 
   // Instantiate the PWM module

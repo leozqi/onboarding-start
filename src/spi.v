@@ -13,7 +13,7 @@ module spi (
     input  wire       copi,    // controller-out peripheral-in input
     output reg[15:0]  reg_en_out,
     output reg[15:0]  reg_en_pwm,
-    output reg[7:0]   reg_pwm_duty,
+    output reg[7:0]   reg_pwm_duty
 );
 
 reg [2:0] sample_sclk;
