@@ -52,15 +52,15 @@ always @(posedge clk) begin
       data_in <= {data_in[14:0], sample_copi[1]};
     end else if (state == 'd17) begin
       state <= 0;
-      if (data_in[14:8] == 8'd0) begin // en_reg_out_7_0
+      if (data_in[14:8] == 'd0) begin // en_reg_out_7_0
         reg_en_out <= {reg_en_out[15:8], data_in[7:0]};
-      end else if (data_in[14:8] == 8'd1) begin
+      end else if (data_in[14:8] == 'd1) begin
         reg_en_out <= {data_in[7:0], reg_en_out[7:0]};
-      end else if (data_in[14:8] == 8'd2) begin // en_reg_pwm_7_0
+      end else if (data_in[14:8] == 'd2) begin // en_reg_pwm_7_0
         reg_en_pwm <= {reg_en_pwm[15:8], data_in[7:0]};
-      end else if (data_in[14:8] == 8'd3) begin
+      end else if (data_in[14:8] == 'd3) begin
         reg_en_pwm <= {data_in[7:0], reg_en_pwm[7:0]};
-      end else if (data_in[14:8] == 8'd4) begin // pwm_duty_cycle
+      end else if (data_in[14:8] == 'd4) begin // pwm_duty_cycle
         reg_pwm_duty <= data_in[7:0];
       end
     end else if (state >= 'd0 && state <= 'd16 && !sample_ncs[1] && sample_ncs[0]) begin
