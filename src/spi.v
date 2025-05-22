@@ -47,9 +47,6 @@ always @(posedge clk) begin
       // nCS goes low, all we need is to wait for the first clock edge
       state <= 'd1;
       data_in <= 0;
-      reg_en_out <= reg_en_out;
-      reg_en_pwm <= reg_en_pwm;
-      reg_pwm_duty <= reg_pwm_duty;
     end else if (state >= 'd1 && state <= 'd16 && !sample_sclk[2] && sample_sclk[1]) begin
       state <= state + 1;
       data_in <= {data_in[14:0], sample_copi[1]};
@@ -57,23 +54,13 @@ always @(posedge clk) begin
       state <= 0;
       if (data_in[14:8] == 8'd0) begin // en_reg_out_7_0
         reg_en_out <= {reg_en_out[15:8], data_in[7:0]};
-        reg_en_pwm <= reg_en_pwm;
-        reg_pwm_duty <= reg_pwm_duty;
       end else if (data_in[14:8] == 8'd1) begin
         reg_en_out <= {data_in[7:0], reg_en_out[7:0]};
-        reg_en_pwm <= reg_en_pwm;
-        reg_pwm_duty <= reg_pwm_duty;
       end else if (data_in[14:8] == 8'd2) begin // en_reg_pwm_7_0
-        reg_en_out <= reg_en_out;
         reg_en_pwm <= {reg_en_pwm[15:8], data_in[7:0]};
-        reg_pwm_duty <= reg_pwm_duty;
       end else if (data_in[14:8] == 8'd3) begin
-        reg_en_out <= reg_en_out;
         reg_en_pwm <= {data_in[7:0], reg_en_pwm[7:0]};
-        reg_pwm_duty <= reg_pwm_duty;
       end else if (data_in[14:8] == 8'd4) begin // pwm_duty_cycle
-        reg_en_out <= reg_en_out;
-        reg_en_pwm <= reg_en_pwm;
         reg_pwm_duty <= data_in[7:0];
       end else begin
         // Ignore invalid addresses
@@ -81,12 +68,6 @@ always @(posedge clk) begin
         reg_en_pwm <= reg_en_pwm;
         reg_pwm_duty <= reg_pwm_duty;
       end
-    end else begin
-      state <= 0;
-      data_in <= 0;
-      reg_en_out <= reg_en_out;
-      reg_en_pwm <= reg_en_pwm;
-      reg_pwm_duty <= reg_pwm_duty;
     end
   end
 end
